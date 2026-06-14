@@ -93,6 +93,13 @@ def main():
         help="Khoảng cách tối thiểu giữa các nốt (ms, mặc định: 80)",
     )
     parser.add_argument(
+        '--sheet', '-s', help="Lưu bản nhạc khuông nhạc ra file PNG",
+    )
+    parser.add_argument(
+        '--beats-per-line', type=int, default=8,
+        help="Số phách mỗi dòng khuông nhạc (mặc định: 8 = 2 ô nhịp 4/4)",
+    )
+    parser.add_argument(
         '--no-trim', action='store_true',
         help="Không cắt khoảng lặng đầu/cuối",
     )
@@ -145,6 +152,18 @@ def main():
             total_duration=result['total_duration'],
             tempo_bpm=result['tempo_bpm'],
             output_path=args.visual,
+        )
+
+    if args.sheet:
+        import os
+        from src.sheet_renderer import render_sheet_music
+        audio_name = os.path.splitext(os.path.basename(args.audio))[0]
+        render_sheet_music(
+            notes=result['notes'],
+            tempo_bpm=result['tempo_bpm'],
+            output_path=args.sheet,
+            title=f"Bản nhạc: {audio_name}",
+            beats_per_system=args.beats_per_line,
         )
 
     print("  Hoàn tất!")
